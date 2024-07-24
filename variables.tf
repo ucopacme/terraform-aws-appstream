@@ -147,3 +147,13 @@ variable "user_settings" {
     }
   ]
 }
+
+variable "directory_name" {
+  type        = string
+  description = "directory_name"
+}
+
+variable "ou" {
+  type        = string
+  description = "organizational_unit_distinguished_name"
+}
