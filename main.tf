@@ -112,6 +112,10 @@ resource "aws_appstream_fleet" "this" {
   compute_capacity {
     desired_instances = var.desired_instances
   }
+  domain_join_info {
+    directory_name = var.directory_name
+    organizational_unit_distinguished_name = var.ou
+  }
   tags = var.tags
 }
 
