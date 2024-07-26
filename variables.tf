@@ -150,10 +150,12 @@ variable "user_settings" {
 
 variable "directory_name" {
   type        = string
+  default     = null
   description = "directory_name"
 }
 
 variable "ou" {
   type        = string
+  default     = null
   description = "organizational_unit_distinguished_name"
 }
