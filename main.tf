@@ -4,7 +4,7 @@ provider "aws" {
 
 ### IAM
 resource "aws_iam_role" "appstream_role" {
-  name = join("-", [var.name, "appstream_role"])
+  name = join("-", [var.name, "role"])
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -20,7 +20,7 @@ resource "aws_iam_role" "appstream_role" {
 }
 
 resource "aws_iam_policy" "appstream_policy" {
-  name        = join("-", [var.name, "appstream_policy"])
+  name        = join("-", [var.name, "policy"])
   description = "Managed By Terraform"
 
   policy = jsonencode({
