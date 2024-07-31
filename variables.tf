@@ -9,7 +9,17 @@ variable "enable_scaling" {
   type        = bool
   default     = true
 }
+variable "scale_up_adjustment" {
+  type        = number
+  description = "Number of instances to add when scaling up."
+  default     = 2
+}
 
+variable "scale_down_adjustment" {
+  type        = number
+  description = "Number of instances to remove when scaling down."
+  default     = 2
+}
 variable "name" {
   default     = ""
   description = "Appstream stack/fleet name"
@@ -62,13 +72,13 @@ variable "min_capacity" {
 }
 
 variable "scale_up" {
-  default = 75.0
+  default = 50.0
   type    = number
   description = "scale_up"
 }
 
 variable "scale_down" {
-  default = 50.0
+  default = 30.0
   type    = number
   description = "scale_down"
 }
