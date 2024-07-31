@@ -138,9 +138,9 @@ resource "aws_appautoscaling_policy" "scale_up" {
   count              = var.enable_scaling ? 1 : 0
   name               = "scale-up-policy"
   policy_type        = "StepScaling"
-  resource_id        = aws_appautoscaling_target.this[0].resource_id
-  scalable_dimension = aws_appautoscaling_target.this[0].scalable_dimension
-  service_namespace  = aws_appautoscaling_target.this[0].service_namespace
+  resource_id        = "fleet/${aws_appstream_fleet.this.name}"
+  scalable_dimension = "appstream:fleet:DesiredCapacity"
+  service_namespace  = "appstream"
 
   step_scaling_policy_configuration {
     adjustment_type         = "ChangeInCapacity"
@@ -158,9 +158,9 @@ resource "aws_appautoscaling_policy" "scale_down" {
   count              = var.enable_scaling ? 1 : 0
   name               = "scale-down-policy"
   policy_type        = "StepScaling"
-  resource_id        = aws_appautoscaling_target.this[0].resource_id
-  scalable_dimension = aws_appautoscaling_target.this[0].scalable_dimension
-  service_namespace  = aws_appautoscaling_target.this[0].service_namespace
+  resource_id        = "fleet/${aws_appstream_fleet.this.name}"
+  scalable_dimension = "appstream:fleet:DesiredCapacity"
+  service_namespace  = "appstream"
 
   step_scaling_policy_configuration {
     adjustment_type         = "ChangeInCapacity"
@@ -173,6 +173,7 @@ resource "aws_appautoscaling_policy" "scale_down" {
     }
   }
 }
+
 
 resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
   count              = var.enable_scaling ? 1 : 0
