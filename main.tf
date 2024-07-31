@@ -129,7 +129,7 @@ resource "aws_appstream_fleet_stack_association" "association" {
 resource "aws_appautoscaling_target" "this" {
   max_capacity       = 10
   min_capacity       = 1
-  resource_id        = "fleet/${aws_appstream_stack.this.name}"
+  resource_id        = "fleet/${aws_appstream_fleet.this.name}"
   scalable_dimension = "appstream:fleet:DesiredCapacity"
   service_namespace  = "appstream"
 }
