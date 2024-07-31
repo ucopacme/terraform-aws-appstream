@@ -47,7 +47,30 @@ variable "max_user_duration_in_seconds" {
   default = 600
   type    = number
    description = "Max user Duration"
+}
 
+variable "max_capacity" {
+  default = 3
+  type    = number
+  description = "Max capacity"
+}
+
+variable "max_capacity" {
+  default = 3
+  type    = number
+  description = "Max capacity"
+}
+
+variable "scale_up" {
+  default = 75.0
+  type    = number
+  description = "scale_up"
+}
+
+variable "scale_down" {
+  default = 50.0
+  type    = number
+  description = "scale_down"
 }
 
 variable "disconnect_timeout_in_seconds" {
