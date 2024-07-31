@@ -123,3 +123,50 @@ resource "aws_appstream_fleet_stack_association" "association" {
   fleet_name = aws_appstream_fleet.this.name
   stack_name = aws_appstream_stack.this.name
 }
+
+
+###
+resource "aws_appautoscaling_target" "this" {
+  max_capacity       = 10
+  min_capacity       = 1
+  resource_id        = "fleet/${aws_appstream_stack.this.name}"
+  scalable_dimension = "appstream:fleet:DesiredCapacity"
+  service_namespace  = "appstream"
+}
+
+resource "aws_appautoscaling_policy" "scale_up" {
+  count              = var.enable_scaling ? 1 : 0
+  name               = "scale-up-policy"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.this.resource_id
+  scalable_dimension = aws_appautoscaling_target.this.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.this.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    target_value = 75.0
+    predefined_metric_specification {
+      predefined_metric_type = "AppStreamAverageCapacityUtilization"
+    }
+    scale_out_cooldown = 300
+    scale_in_cooldown  = 300
+  }
+}
+
+resource "aws_appautoscaling_policy" "scale_down" {
+  count              = var.enable_scaling ? 1 : 0
+  name               = "scale-down-policy"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.this.resource_id
+  scalable_dimension = aws_appautoscaling_target.this.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.this.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    target_value = 25.0
+    predefined_metric_specification {
+      predefined_metric_type = "AppStreamAverageCapacityUtilization"
+    }
+    scale_out_cooldown = 300
+    scale_in_cooldown  = 300
+  }
+}
+
