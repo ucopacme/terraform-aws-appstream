@@ -135,38 +135,77 @@ resource "aws_appautoscaling_target" "this" {
 }
 
 resource "aws_appautoscaling_policy" "scale_up" {
-  count              = var.enable_scaling ? 1 : 0
   name               = "scale-up-policy"
-  policy_type        = "TargetTrackingScaling"
+  policy_type        = "StepScaling"
   resource_id        = aws_appautoscaling_target.this.resource_id
   scalable_dimension = aws_appautoscaling_target.this.scalable_dimension
   service_namespace  = aws_appautoscaling_target.this.service_namespace
 
-  target_tracking_scaling_policy_configuration {
-    target_value = var.scale_up
-    predefined_metric_specification {
-      predefined_metric_type = "AppStreamAverageCapacityUtilization"
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = 300
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      scaling_adjustment = 2
+      metric_interval_lower_bound = 0
     }
-    scale_out_cooldown = 300
-    scale_in_cooldown  = 300
   }
 }
 
 resource "aws_appautoscaling_policy" "scale_down" {
-  count              = var.enable_scaling ? 1 : 0
   name               = "scale-down-policy"
-  policy_type        = "TargetTrackingScaling"
+  policy_type        = "StepScaling"
   resource_id        = aws_appautoscaling_target.this.resource_id
   scalable_dimension = aws_appautoscaling_target.this.scalable_dimension
   service_namespace  = aws_appautoscaling_target.this.service_namespace
 
-  target_tracking_scaling_policy_configuration {
-    target_value = var.scale_down
-    predefined_metric_specification {
-      predefined_metric_type = "AppStreamAverageCapacityUtilization"
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = 300
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      scaling_adjustment = -2
+      metric_interval_upper_bound = 0
     }
-    scale_out_cooldown = 300
-    scale_in_cooldown  = 300
   }
 }
+
+resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
+  alarm_name          = "scale-up-alarm"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = 300
+  statistic           = "Average"
+  threshold           = var.scale_up
+
+  dimensions = {
+    FleetName = aws_appstream_fleet.this.name
+  }
+
+  alarm_actions = [aws_appautoscaling_policy.scale_up.arn]
+}
+
+resource "aws_cloudwatch_metric_alarm" "scale_down_alarm" {
+  alarm_name          = "scale-down-alarm"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = 300
+  statistic           = "Average"
+  threshold           = var.scale_down
+
+  dimensions = {
+    FleetName = aws_appstream_fleet.this.name
+  }
+
+  alarm_actions = [aws_appautoscaling_policy.scale_down.arn]
+}
+
+
+
 
