@@ -4,6 +4,12 @@ variable "enable_vpce" {
   default     = false
 }
 
+variable "enable_scaling" {
+  description = "Enable or disable auto-scaling policies"
+  type        = bool
+  default     = true
+}
+
 variable "name" {
   default     = ""
   description = "Appstream stack/fleet name"
