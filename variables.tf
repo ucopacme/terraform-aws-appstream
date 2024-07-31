@@ -55,8 +55,8 @@ variable "max_capacity" {
   description = "Max capacity"
 }
 
-variable "max_capacity" {
-  default = 3
+variable "min_capacity" {
+  default = 1
   type    = number
   description = "Max capacity"
 }
