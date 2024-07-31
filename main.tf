@@ -135,11 +135,12 @@ resource "aws_appautoscaling_target" "this" {
 }
 
 resource "aws_appautoscaling_policy" "scale_up" {
+  count              = var.enable_scaling ? 1 : 0
   name               = "scale-up-policy"
   policy_type        = "StepScaling"
-  resource_id        = aws_appautoscaling_target.this.resource_id
-  scalable_dimension = aws_appautoscaling_target.this.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.this.service_namespace
+  resource_id        = aws_appautoscaling_target.this[0].resource_id
+  scalable_dimension = aws_appautoscaling_target.this[0].scalable_dimension
+  service_namespace  = aws_appautoscaling_target.this[0].service_namespace
 
   step_scaling_policy_configuration {
     adjustment_type         = "ChangeInCapacity"
@@ -154,11 +155,12 @@ resource "aws_appautoscaling_policy" "scale_up" {
 }
 
 resource "aws_appautoscaling_policy" "scale_down" {
+  count              = var.enable_scaling ? 1 : 0
   name               = "scale-down-policy"
   policy_type        = "StepScaling"
-  resource_id        = aws_appautoscaling_target.this.resource_id
-  scalable_dimension = aws_appautoscaling_target.this.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.this.service_namespace
+  resource_id        = aws_appautoscaling_target.this[0].resource_id
+  scalable_dimension = aws_appautoscaling_target.this[0].scalable_dimension
+  service_namespace  = aws_appautoscaling_target.this[0].service_namespace
 
   step_scaling_policy_configuration {
     adjustment_type         = "ChangeInCapacity"
@@ -173,7 +175,8 @@ resource "aws_appautoscaling_policy" "scale_down" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
-  alarm_name          = "scale-up-alarm"
+  count              = var.enable_scaling ? 1 : 0
+  alarm_name         = "scale-up-alarm"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
   metric_name         = "CPUUtilization"
@@ -186,11 +189,12 @@ resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
     FleetName = aws_appstream_fleet.this.name
   }
 
-  alarm_actions = [aws_appautoscaling_policy.scale_up.arn]
+  alarm_actions = [aws_appautoscaling_policy.scale_up[0].arn]
 }
 
 resource "aws_cloudwatch_metric_alarm" "scale_down_alarm" {
-  alarm_name          = "scale-down-alarm"
+  count              = var.enable_scaling ? 1 : 0
+  alarm_name         = "scale-down-alarm"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = 1
   metric_name         = "CPUUtilization"
@@ -203,7 +207,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_down_alarm" {
     FleetName = aws_appstream_fleet.this.name
   }
 
-  alarm_actions = [aws_appautoscaling_policy.scale_down.arn]
+  alarm_actions = [aws_appautoscaling_policy.scale_down[0].arn]
 }
 
 
