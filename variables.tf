@@ -71,13 +71,13 @@ variable "min_capacity" {
   description = "Max capacity"
 }
 
-variable "scale_up" {
+variable "threshold_up" {
   default = 50.0
   type    = number
   description = "scale_up"
 }
 
-variable "scale_down" {
+variable "threshold_down" {
   default = 30.0
   type    = number
   description = "scale_down"
