@@ -148,7 +148,7 @@ resource "aws_appautoscaling_policy" "scale_up" {
     metric_aggregation_type = "Average"
 
     step_adjustment {
-      scaling_adjustment = 2
+      scaling_adjustment = var.add_fleet
       metric_interval_lower_bound = 0
     }
   }
@@ -168,7 +168,7 @@ resource "aws_appautoscaling_policy" "scale_down" {
     metric_aggregation_type = "Average"
 
     step_adjustment {
-      scaling_adjustment = -2
+      scaling_adjustment = var.remove_fleet
       metric_interval_upper_bound = 0
     }
   }
