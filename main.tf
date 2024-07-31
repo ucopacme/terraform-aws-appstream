@@ -184,7 +184,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
   namespace           = "AWS/EC2"
   period              = 300
   statistic           = "Average"
-  threshold           = var.scale_up
+  threshold           = var.threshold_up
 
   dimensions = {
     FleetName = aws_appstream_fleet.this.name
@@ -202,7 +202,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_down_alarm" {
   namespace           = "AWS/EC2"
   period              = 300
   statistic           = "Average"
-  threshold           = var.scale_down
+  threshold           = var.threshold_down
 
   dimensions = {
     FleetName = aws_appstream_fleet.this.name
