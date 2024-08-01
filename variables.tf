@@ -21,6 +21,13 @@ variable "period" {
   default     = 300
 }
 
+variable "evaluation_periods" {
+  type        = number
+  description = "period"
+  default     = 5
+}
+
+
 variable "scale_down_adjustment" {
   type        = number
   description = "Number of instances to remove when scaling down."
