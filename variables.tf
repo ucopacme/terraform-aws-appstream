@@ -18,7 +18,7 @@ variable "scale_up_adjustment" {
 variable "period" {
   type        = number
   description = "period"
-  default     = 150
+  default     = 300
 }
 
 variable "scale_down_adjustment" {
