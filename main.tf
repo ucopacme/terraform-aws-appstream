@@ -178,7 +178,7 @@ resource "aws_appautoscaling_policy" "scale_down" {
 resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
   count              = var.enable_scaling ? 1 : 0
   alarm_name         = "scale-up-alarm"
-  comparison_operator = "GreaterThanThreshold"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1
   metric_name         = "CapacityUtilization"
   namespace           = "AWS/AppStream"
@@ -196,7 +196,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
 resource "aws_cloudwatch_metric_alarm" "scale_down_alarm" {
   count              = var.enable_scaling ? 1 : 0
   alarm_name         = "scale-down-alarm"
-  comparison_operator = "LessThanThreshold"
+  comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = 1
   metric_name         = "CapacityUtilization"
   namespace           = "AWS/AppStream"
