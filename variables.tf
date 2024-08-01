@@ -15,6 +15,12 @@ variable "scale_up_adjustment" {
   default     = 2
 }
 
+variable "period" {
+  type        = number
+  description = "period"
+  default     = 150
+}
+
 variable "scale_down_adjustment" {
   type        = number
   description = "Number of instances to remove when scaling down."
