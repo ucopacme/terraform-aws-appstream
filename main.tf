@@ -182,7 +182,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
   evaluation_periods  = 1
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
-  period              = 300
+  period              = var.period
   statistic           = "Average"
   threshold           = var.threshold_up
 
@@ -200,7 +200,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_down_alarm" {
   evaluation_periods  = 1
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
-  period              = 300
+  period              = var.period
   statistic           = "Average"
   threshold           = var.threshold_down
 
