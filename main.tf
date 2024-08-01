@@ -205,7 +205,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_down_alarm" {
   threshold           = var.threshold_down
 
   dimensions = {
-    FleetName = aws_appstream_fleet.this.name
+    Fleet = aws_appstream_fleet.this.name
   }
 
   alarm_actions = [aws_appautoscaling_policy.scale_down[0].arn]
