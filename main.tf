@@ -197,7 +197,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_down_alarm" {
   count              = var.enable_scaling ? 1 : 0
   alarm_name         = join("-", [var.name, "scale", "down", "Alarm"])
   comparison_operator = "LessThanOrEqualToThreshold"
-  evaluation_periods  = varevaluation_periods
+  evaluation_periods  = var.evaluation_periods
   metric_name         = "CapacityUtilization"
   namespace           = "AWS/AppStream"
   period              = var.period
