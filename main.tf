@@ -180,7 +180,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
   alarm_name         = "scale-up-alarm"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
-  metric_name         = "AverageCapacityUtilization"
+  metric_name         = "CapacityUtilization"
   namespace           = "AWS/AppStream"
   period              = var.period
   statistic           = "Average"
@@ -198,7 +198,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_down_alarm" {
   alarm_name         = "scale-down-alarm"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = 1
-  metric_name         = "AverageCapacityUtilization"
+  metric_name         = "CapacityUtilization"
   namespace           = "AWS/AppStream"
   period              = var.period
   statistic           = "Average"
