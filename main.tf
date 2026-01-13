@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-west-2"
+  region = var.region
 }
 
 ### IAM
@@ -16,6 +16,7 @@ resource "aws_iam_role" "appstream_role" {
       }
     }]
   })
+
   tags = var.tags
 }
 
@@ -27,14 +28,13 @@ resource "aws_iam_policy" "appstream_policy" {
     Version = "2012-10-17",
     Statement = [
       {
+        Effect = "Allow",
         Action = [
           "s3:PutObject",
           "s3:GetObject",
           "s3:DeleteObject",
-          "s3:ListBucket",
-          "s3:GetObject"
+          "s3:ListBucket"
         ],
-        Effect = "Allow",
         Resource = ["*"]
       }
     ]
@@ -45,8 +45,6 @@ resource "aws_iam_role_policy_attachment" "appstream_role_attachment" {
   role       = aws_iam_role.appstream_role.name
   policy_arn = aws_iam_policy.appstream_policy.arn
 }
-
-
 
 # Conditionally Create VPC Endpoint
 resource "aws_vpc_endpoint" "appstream_vpce" {
@@ -60,10 +58,40 @@ resource "aws_vpc_endpoint" "appstream_vpce" {
   tags = var.tags
 }
 
+# Optional: Domain join using non-managed AD and Secrets Manager
+resource "aws_appstream_directory_config" "this" {
+  count = var.directory_name != "" && var.secretsmanager_name != "" ? 1 : 0
+
+  directory_name = var.directory_name
+  organizational_unit_distinguished_names = [
+    var.ou
+  ]
+
+  service_account_credentials {
+    account_name     = jsondecode(data.aws_secretsmanager_secret_version.this[0].secret_string)["username"]
+    account_password = jsondecode(data.aws_secretsmanager_secret_version.this[0].secret_string)["password"]
+  }
+}
+
+
+# Secrets Manager data source for service account
+data "aws_secretsmanager_secret" "this" {
+  count = var.secretsmanager_name != "" ? 1 : 0
+  name  = var.secretsmanager_name
+}
+
+data "aws_secretsmanager_secret_version" "this" {
+  count     = var.secretsmanager_name != "" ? 1 : 0
+  secret_id = data.aws_secretsmanager_secret.this[0].id
+}
+
+
+# Stack
 resource "aws_appstream_stack" "this" {
   name         = join("-", [var.name, "stack"])
   display_name = join("-", [var.name, "stack"])
   description  = join("-", [var.name, "stack"])
+
   storage_connectors {
     connector_type = "HOMEFOLDERS"
   }
@@ -75,6 +103,7 @@ resource "aws_appstream_stack" "this" {
       permission = user_settings.value.permission
     }
   }
+
   dynamic "access_endpoints" {
     for_each = var.enable_vpce ? [1] : []
     content {
@@ -87,6 +116,7 @@ resource "aws_appstream_stack" "this" {
     enabled        = true
     settings_group = join("-", [var.name, "setting-group"])
   }
+
   tags = var.tags
 }
 
@@ -99,34 +129,40 @@ resource "aws_appstream_fleet" "this" {
   max_user_duration_in_seconds   = var.max_user_duration_in_seconds
   disconnect_timeout_in_seconds  = var.disconnect_timeout_in_seconds
   idle_disconnect_timeout_in_seconds = var.idle_disconnect_timeout_in_seconds
-  #min_capacity      = var.min_capacity  # Set the minimum fleet size
-  #max_capacity      = var.max_capacity  # Set the maximum fleet size
   stream_view                    = var.stream_view
   enable_default_internet_access = var.enable_default_internet_access
+  iam_role_arn                   = aws_iam_role.appstream_role.arn
+
   vpc_config {
     subnet_ids         = var.subnet_ids
     security_group_ids = var.security_group_ids
   }
-  iam_role_arn = aws_iam_role.appstream_role.arn
 
   compute_capacity {
     desired_instances = var.desired_instances
   }
-  domain_join_info {
-    directory_name = var.directory_name
-    organizational_unit_distinguished_name = var.ou
+
+  dynamic "domain_join_info" {
+    for_each = aws_appstream_directory_config.this[*]  # will be empty if no domain join
+    content {
+      directory_name                         = domain_join_info.value.directory_name
+      organizational_unit_distinguished_name = domain_join_info.value.organizational_unit_distinguished_names[0]
+    }
   }
+
   tags = var.tags
 }
+
 
 resource "aws_appstream_fleet_stack_association" "association" {
   fleet_name = aws_appstream_fleet.this.name
   stack_name = aws_appstream_stack.this.name
 }
 
-
-###
+# Auto Scaling
 resource "aws_appautoscaling_target" "this" {
+  depends_on = [aws_appstream_fleet.this]
+
   max_capacity       = var.max_capacity
   min_capacity       = var.min_capacity
   resource_id        = "fleet/${aws_appstream_fleet.this.name}"
@@ -135,7 +171,9 @@ resource "aws_appautoscaling_target" "this" {
 }
 
 resource "aws_appautoscaling_policy" "scale_up" {
-  count              = var.enable_scaling ? 1 : 0
+  count = var.enable_scaling ? 1 : 0
+  depends_on = [aws_appautoscaling_target.this]
+
   name               = "scale-up-policy"
   policy_type        = "StepScaling"
   resource_id        = "fleet/${aws_appstream_fleet.this.name}"
@@ -148,14 +186,16 @@ resource "aws_appautoscaling_policy" "scale_up" {
     metric_aggregation_type = "Average"
 
     step_adjustment {
-      scaling_adjustment = var.scale_up_adjustment
+      scaling_adjustment          = var.scale_up_adjustment
       metric_interval_lower_bound = 0
     }
   }
 }
 
 resource "aws_appautoscaling_policy" "scale_down" {
-  count              = var.enable_scaling ? 1 : 0
+  count = var.enable_scaling ? 1 : 0
+  depends_on = [aws_appautoscaling_target.this]
+
   name               = "scale-down-policy"
   policy_type        = "StepScaling"
   resource_id        = "fleet/${aws_appstream_fleet.this.name}"
@@ -168,16 +208,16 @@ resource "aws_appautoscaling_policy" "scale_down" {
     metric_aggregation_type = "Average"
 
     step_adjustment {
-      scaling_adjustment = var.scale_down_adjustment
+      scaling_adjustment          = var.scale_down_adjustment
       metric_interval_upper_bound = 0
     }
   }
 }
 
-
+# CloudWatch Alarms
 resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
   count              = var.enable_scaling ? 1 : 0
-  alarm_name         = join("-", [var.name, "scale", "up", "Alarm"])
+  alarm_name         = "${var.name}-scale-up-Alarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = var.evaluation_periods
   metric_name         = "CapacityUtilization"
@@ -195,7 +235,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
 
 resource "aws_cloudwatch_metric_alarm" "scale_down_alarm" {
   count              = var.enable_scaling ? 1 : 0
-  alarm_name         = join("-", [var.name, "scale", "down", "Alarm"])
+  alarm_name         = "${var.name}-scale-down-Alarm"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = var.evaluation_periods
   metric_name         = "CapacityUtilization"
@@ -210,7 +250,3 @@ resource "aws_cloudwatch_metric_alarm" "scale_down_alarm" {
 
   alarm_actions = [aws_appautoscaling_policy.scale_down[0].arn]
 }
-
-
-
-

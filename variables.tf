@@ -1,5 +1,9 @@
+################################
+# Global / Feature Flags
+################################
+
 variable "enable_vpce" {
-  description = "Enable VPC endpoint for streaming"
+  description = "Enable VPC endpoint for AppStream streaming"
   type        = bool
   default     = false
 }
@@ -9,205 +13,204 @@ variable "enable_scaling" {
   type        = bool
   default     = true
 }
-variable "scale_up_adjustment" {
+
+variable "region" {
+  description = "AWS region"
+  type        = string
+  default     = "us-west-2"
+}
+
+variable "name" {
+  description = "Base name used for AppStream stack, fleet, and IAM resources"
+  type        = string
+}
+
+variable "tags" {
+  description = "Tags applied to all resources"
+  type        = map(string)
+  default     = {}
+}
+
+################################
+# Fleet Configuration
+################################
+
+variable "instance_type" {
+  description = "AppStream instance type"
+  type        = string
+  default     = "stream.standard.medium"
+}
+
+variable "fleet_type" {
+  description = "Fleet type: ON_DEMAND or ALWAYS_ON"
+  type        = string
+  default     = "ON_DEMAND"
+
+  validation {
+    condition     = contains(["ON_DEMAND", "ALWAYS_ON"], var.fleet_type)
+    error_message = "fleet_type must be ON_DEMAND or ALWAYS_ON"
+  }
+}
+
+variable "image_name" {
+  description = "AppStream image name"
+  type        = string
+  default     = "AppStream-WinServer2022-11-10-2025"
+}
+
+variable "stream_view" {
+  description = "Stream view: DESKTOP or APPS"
+  type        = string
+  default     = "DESKTOP"
+
+  validation {
+    condition     = contains(["DESKTOP", "APPS"], var.stream_view)
+    error_message = "stream_view must be DESKTOP or APPS"
+  }
+}
+
+variable "enable_default_internet_access" {
+  description = "Enable default internet access for fleet instances"
+  type        = bool
+  default     = false
+}
+
+variable "desired_instances" {
+  description = "Initial desired number of fleet instances"
   type        = number
-  description = "Number of instances to add when scaling up."
+  default     = 1
+}
+
+variable "max_user_duration_in_seconds" {
+  description = "Maximum user session duration"
+  type        = number
+  default     = 600
+}
+
+variable "disconnect_timeout_in_seconds" {
+  description = "Disconnect timeout"
+  type        = number
+  default     = 300
+}
+
+variable "idle_disconnect_timeout_in_seconds" {
+  description = "Idle disconnect timeout"
+  type        = number
+  default     = 600
+}
+
+################################
+# Auto Scaling Configuration
+################################
+
+variable "min_capacity" {
+  description = "Minimum fleet capacity"
+  type        = number
+  default     = 1
+}
+
+variable "max_capacity" {
+  description = "Maximum fleet capacity"
+  type        = number
+  default     = 3
+}
+
+variable "scale_up_adjustment" {
+  description = "Number of instances to add when scaling up"
+  type        = number
   default     = 2
 }
 
-variable "period" {
+variable "scale_down_adjustment" {
+  description = "Number of instances to remove when scaling down"
   type        = number
-  description = "period"
+  default     = 2
+}
+
+variable "threshold_up" {
+  description = "Scale-up threshold (CapacityUtilization %)"
+  type        = number
+  default     = 50
+}
+
+variable "threshold_down" {
+  description = "Scale-down threshold (CapacityUtilization %)"
+  type        = number
+  default     = 30
+}
+
+variable "period" {
+  description = "CloudWatch alarm period in seconds"
+  type        = number
   default     = 300
 }
 
 variable "evaluation_periods" {
+  description = "Number of CloudWatch periods to evaluate"
   type        = number
-  description = "period"
   default     = 5
 }
 
+################################
+# Network Configuration
+################################
 
-variable "scale_down_adjustment" {
-  type        = number
-  description = "Number of instances to remove when scaling down."
-  default     = 2
-}
-variable "name" {
-  default     = ""
-  description = "Appstream stack/fleet name"
-}
-
-variable "enable_default_internet_access" {
-  default     = "false"
-  description = "enable Internet access"
-}
-
-variable "region" {
-  default     = "us-west-2"
-  description = "aws region"
-}
-
-variable "instance_type" {
-  default = "stream.standard.medium"
-  description = "Instance Type"
-
-}
-
-variable "fleet_type" {
-  default = "ON_DEMAND"
-  description = "Fleet Type ON-DEMOND OR ALWAYS-ON"
-
-}
-
-variable "image_name" {
-  default = "AppStream-WinServer2016-06-17-2024"
-  description = "Image Name"
-
-}
-
-variable "max_user_duration_in_seconds" {
-  default = 600
-  type    = number
-   description = "Max user Duration"
-}
-
-variable "max_capacity" {
-  default = 3
-  type    = number
-  description = "Max capacity"
-}
-
-variable "min_capacity" {
-  default = 1
-  type    = number
-  description = "Max capacity"
-}
-
-variable "threshold_up" {
-  default = 50.0
-  type    = number
-  description = "scale_up"
-}
-
-variable "threshold_down" {
-  default = 30.0
-  type    = number
-  description = "scale_down"
-}
-
-variable "disconnect_timeout_in_seconds" {
-  default = 300
-  type    = number
-  description = "Disconnect TimeOut"
-}
-
-
-variable "idle_disconnect_timeout_in_seconds" {
-  default = 600
-  type    = number
-  description = "Idle Timeout"
-}
-
-
-variable "desired_sessions" {
-  default = null
-  type    = number
-  description = "Desired Session"
-}
-variable "max_sessions_per_instance" {
-  default = null
-  type    = number
-  description = "Max Sessions per instance"
-
-}
-
-variable "stream_view" {
-  default = "DESKTOP"
-  description = "Stream View DESKTOP or APPS"
-
+variable "vpc_id" {
+  description = "VPC ID (required if enable_vpce = true)"
+  type        = string
+  default     = null
 }
 
 variable "subnet_ids" {
-  default = []
-  type    = list(string)
-  description = "List of Subnets"
-
+  description = "Subnet IDs for AppStream fleet and VPC endpoint"
+  type        = list(string)
 }
 
 variable "security_group_ids" {
-  default = []
-  type = list(string)
-  description = "Security Group ID"
-  
+  description = "Security group IDs for AppStream fleet and VPC endpoint"
+  type        = list(string)
 }
 
-variable "vpc_id" {
-  default = ""
-  type = string
-  description = "VPC ID"
-}
-
-variable "desired_instances" {
-  default = 1
-  type = number
-  description = "Desired Instance Number"
-  
-}
-
-
-variable "tags" {
-  default     = {}
-  description = "A map of tags to add to all resources"
-  type        = map(string)
-}
+################################
+# Stack Configuration
+################################
 
 variable "user_settings" {
-  description = "List of user settings for the AppStream stack"
+  description = "User settings for the AppStream stack"
   type = list(object({
     action     = string
     permission = string
   }))
+
   default = [
-    {
-      action     = "CLIPBOARD_COPY_FROM_LOCAL_DEVICE"
-      permission = "ENABLED"
-    },
-    {
-      action     = "CLIPBOARD_COPY_TO_LOCAL_DEVICE"
-      permission = "ENABLED"
-    },
-    {
-      action     = "FILE_UPLOAD"
-      permission = "ENABLED"
-    },
-    {
-      action     = "FILE_DOWNLOAD"
-      permission = "ENABLED"
-    },
-    {
-      action     = "PRINTING_TO_LOCAL_DEVICE"
-      permission = "ENABLED"
-    },
-   {
-    action     = "DOMAIN_PASSWORD_SIGNIN"
-    permission = "DISABLED"
-    },
-    {
-    action     = "DOMAIN_SMART_CARD_SIGNIN"
-    permission = "DISABLED"
-    }
+    { action = "CLIPBOARD_COPY_FROM_LOCAL_DEVICE", permission = "ENABLED" },
+    { action = "CLIPBOARD_COPY_TO_LOCAL_DEVICE",   permission = "ENABLED" },
+    { action = "FILE_UPLOAD",                      permission = "ENABLED" },
+    { action = "FILE_DOWNLOAD",                    permission = "ENABLED" },
+    { action = "PRINTING_TO_LOCAL_DEVICE",         permission = "ENABLED" },
+    { action = "DOMAIN_PASSWORD_SIGNIN",           permission = "DISABLED" },
+    { action = "DOMAIN_SMART_CARD_SIGNIN",         permission = "DISABLED" }
   ]
 }
 
+################################
+# Active Directory (Optional)
+################################
+
 variable "directory_name" {
+  description = "Active Directory name (optional)"
   type        = string
   default     = null
-  description = "directory_name"
 }
 
 variable "ou" {
+  description = "Organizational Unit DN (optional)"
   type        = string
   default     = null
-  description = "organizational_unit_distinguished_name"
+}
+
+variable "secretsmanager_name" {
+  description = "Optional: Name of the Secrets Manager secret containing the service account credentials for AD domain join"
+  type        = string
+  default     = ""   # empty string = no domain join secret
 }
