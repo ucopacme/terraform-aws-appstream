@@ -4,7 +4,8 @@ provider "aws" {
 
 ### IAM
 resource "aws_iam_role" "appstream_role" {
-  name = join("-", [var.name, "role"])
+  name        = join("-", [var.name, "role"])
+  description = "Role to define allowed actions for AppStream streaming instances (analogous to Instance Host Roles for EC2)"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -24,21 +25,7 @@ resource "aws_iam_policy" "appstream_policy" {
   name        = join("-", [var.name, "policy"])
   description = "Managed By Terraform"
 
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "s3:PutObject",
-          "s3:GetObject",
-          "s3:DeleteObject",
-          "s3:ListBucket"
-        ],
-        Resource = ["*"]
-      }
-    ]
-  })
+  policy = var.appstream_machine_policy
 }
 
 resource "aws_iam_role_policy_attachment" "appstream_role_attachment" {
@@ -48,11 +35,11 @@ resource "aws_iam_role_policy_attachment" "appstream_role_attachment" {
 
 # Conditionally Create VPC Endpoint
 resource "aws_vpc_endpoint" "appstream_vpce" {
-  count             = var.enable_vpce ? 1 : 0
-  vpc_id            = var.vpc_id
-  service_name      = "com.amazonaws.${var.region}.appstream.streaming"
-  vpc_endpoint_type = "Interface"
-  subnet_ids        = var.subnet_ids
+  count              = var.enable_vpce ? 1 : 0
+  vpc_id             = var.vpc_id
+  service_name       = "com.amazonaws.${var.region}.appstream.streaming"
+  vpc_endpoint_type  = "Interface"
+  subnet_ids         = var.subnet_ids
   security_group_ids = var.security_group_ids
 
   tags = var.tags

@@ -25,6 +25,12 @@ variable "name" {
   type        = string
 }
 
+variable "appstream_machine_policy" {
+  description = "IAM policy for appstream_machine_role"
+  type        = string
+  default     = "{\"Statement\":[{\"Action\":[\"s3:ListBucket\"],\"Effect\":\"Allow\",\"Resource\":[\"*\"]}],\"Version\":\"2012-10-17\"}"
+}
+
 variable "tags" {
   description = "Tags applied to all resources"
   type        = map(string)
