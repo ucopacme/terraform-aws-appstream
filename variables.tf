@@ -130,7 +130,7 @@ variable "scale_up_adjustment" {
 variable "scale_down_adjustment" {
   description = "Number of instances to remove when scaling down"
   type        = number
-  default     = 2
+  default     = -1
 }
 
 variable "threshold_up" {
