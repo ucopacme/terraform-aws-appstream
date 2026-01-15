@@ -109,16 +109,16 @@ resource "aws_appstream_stack" "this" {
 
 ### Fleet
 resource "aws_appstream_fleet" "this" {
-  name                           = join("-", [var.name, "fleet"])
-  instance_type                  = var.instance_type
-  fleet_type                     = var.fleet_type
-  image_name                     = var.image_name
-  max_user_duration_in_seconds   = var.max_user_duration_in_seconds
-  disconnect_timeout_in_seconds  = var.disconnect_timeout_in_seconds
+  name                               = join("-", [var.name, "fleet"])
+  instance_type                      = var.instance_type
+  fleet_type                         = var.fleet_type
+  image_name                         = var.image_name
+  max_user_duration_in_seconds       = var.max_user_duration_in_seconds
+  disconnect_timeout_in_seconds      = var.disconnect_timeout_in_seconds
   idle_disconnect_timeout_in_seconds = var.idle_disconnect_timeout_in_seconds
-  stream_view                    = var.stream_view
-  enable_default_internet_access = var.enable_default_internet_access
-  iam_role_arn                   = aws_iam_role.appstream_role.arn
+  stream_view                        = var.stream_view
+  enable_default_internet_access     = var.enable_default_internet_access
+  iam_role_arn                       = aws_iam_role.appstream_role.arn
 
   vpc_config {
     subnet_ids         = var.subnet_ids
@@ -135,6 +135,10 @@ resource "aws_appstream_fleet" "this" {
       directory_name                         = domain_join_info.value.directory_name
       organizational_unit_distinguished_name = domain_join_info.value.organizational_unit_distinguished_names[0]
     }
+  }
+
+  lifecycle {
+    ignore_changes = [compute_capacity]
   }
 
   tags = var.tags
