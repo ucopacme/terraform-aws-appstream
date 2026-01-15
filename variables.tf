@@ -157,6 +157,30 @@ variable "evaluation_periods" {
   default     = 5
 }
 
+variable "period_up" {
+  description = "CloudWatch alarm period in seconds for scale-up alarm"
+  type        = number
+  default     = null
+}
+
+variable "evaluation_periods_up" {
+  description = "Number of CloudWatch periods to evaluate for scale-up alarm"
+  type        = number
+  default     = null
+}
+
+variable "period_down" {
+  description = "CloudWatch alarm period in seconds for scale-down alarm"
+  type        = number
+  default     = null
+}
+
+variable "evaluation_periods_down" {
+  description = "Number of CloudWatch periods to evaluate for scale-down alarm"
+  type        = number
+  default     = null
+}
+
 ################################
 # Network Configuration
 ################################

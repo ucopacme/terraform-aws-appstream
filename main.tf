@@ -107,7 +107,7 @@ resource "aws_appstream_stack" "this" {
   tags = var.tags
 }
 
-### Fleet 
+### Fleet
 resource "aws_appstream_fleet" "this" {
   name                           = join("-", [var.name, "fleet"])
   instance_type                  = var.instance_type
@@ -203,13 +203,13 @@ resource "aws_appautoscaling_policy" "scale_down" {
 
 # CloudWatch Alarms
 resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
-  count              = var.enable_scaling ? 1 : 0
-  alarm_name         = "${var.name}-scale-up-Alarm"
+  count               = var.enable_scaling ? 1 : 0
+  alarm_name          = "${var.name}-scale-up-Alarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = var.evaluation_periods
+  evaluation_periods  = var.evaluation_periods_up != null ? var.evaluation_periods_up : var.evaluation_periods
   metric_name         = "CapacityUtilization"
   namespace           = "AWS/AppStream"
-  period              = var.period
+  period              = var.period_up != null ? var.period_up : var.period
   statistic           = "Average"
   threshold           = var.threshold_up
 
@@ -221,13 +221,13 @@ resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "scale_down_alarm" {
-  count              = var.enable_scaling ? 1 : 0
-  alarm_name         = "${var.name}-scale-down-Alarm"
+  count               = var.enable_scaling ? 1 : 0
+  alarm_name          = "${var.name}-scale-down-Alarm"
   comparison_operator = "LessThanOrEqualToThreshold"
-  evaluation_periods  = var.evaluation_periods
+  evaluation_periods  = var.evaluation_periods_down != null ? var.evaluation_periods_down : var.evaluation_periods
   metric_name         = "CapacityUtilization"
   namespace           = "AWS/AppStream"
-  period              = var.period
+  period              = var.period_down != null ? var.period_down : var.period
   statistic           = "Average"
   threshold           = var.threshold_down
 
