@@ -70,7 +70,7 @@ variable "stream_view" {
   default     = "DESKTOP"
 
   validation {
-    condition     = contains(["DESKTOP", "APPS"], var.stream_view)
+    condition     = contains(["DESKTOP", "APP"], var.stream_view)
     error_message = "stream_view must be DESKTOP or APPS"
   }
 }
@@ -104,6 +104,13 @@ variable "idle_disconnect_timeout_in_seconds" {
   type        = number
   default     = 600
 }
+
+variable "enable_persistent_storage" {
+  type        = bool
+  default     = true
+  description = "Enable or disable AppStream persistent storage (HOMEFOLDERS / S3)"
+}
+
 
 ################################
 # Auto Scaling Configuration
