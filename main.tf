@@ -73,14 +73,19 @@ data "aws_secretsmanager_secret_version" "this" {
 }
 
 
+
 # Stack
 resource "aws_appstream_stack" "this" {
   name         = join("-", [var.name, "stack"])
   display_name = join("-", [var.name, "stack"])
   description  = join("-", [var.name, "stack"])
 
-  storage_connectors {
-    connector_type = "HOMEFOLDERS"
+  # Dynamic HOMEFOLDERS connector
+  dynamic "storage_connectors" {
+    for_each = var.enable_persistent_storage ? [1] : []
+    content {
+      connector_type = "HOMEFOLDERS"
+    }
   }
 
   dynamic "user_settings" {
@@ -106,6 +111,7 @@ resource "aws_appstream_stack" "this" {
 
   tags = var.tags
 }
+
 
 ### Fleet
 resource "aws_appstream_fleet" "this" {

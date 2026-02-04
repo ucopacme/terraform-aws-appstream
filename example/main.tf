@@ -22,7 +22,7 @@ module "appstream" {
   max_capacity                   = 5
   enable_default_internet_access = false # the fleet must be deployed in a public subnet (with a route to an Internet Gateway).
   stream_view                    = "DESKTOP"
-
+  enable_persistent_storage     = false
   max_user_duration_in_seconds       = 3600
   disconnect_timeout_in_seconds      = 300
   idle_disconnect_timeout_in_seconds = 900
