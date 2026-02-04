@@ -138,7 +138,7 @@ resource "aws_appstream_fleet" "this" {
   }
 
   lifecycle {
-    ignore_changes = [compute_capacity]
+    ignore_changes = [compute_capacity, image_name]
   }
 
   tags = var.tags
