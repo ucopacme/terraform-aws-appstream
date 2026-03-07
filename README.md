@@ -45,7 +45,8 @@ No modules.
 | <a name="input_evaluation_periods"></a> [evaluation\_periods](#input\_evaluation\_periods) | Number of CloudWatch periods to evaluate | `number` | `5` | no |
 | <a name="input_fleet_type"></a> [fleet\_type](#input\_fleet\_type) | Fleet type: ON\_DEMAND or ALWAYS\_ON | `string` | `"ON_DEMAND"` | no |
 | <a name="input_idle_disconnect_timeout_in_seconds"></a> [idle\_disconnect\_timeout\_in\_seconds](#input\_idle\_disconnect\_timeout\_in\_seconds) | Idle disconnect timeout | `number` | `600` | no |
-| <a name="input_image_name"></a> [image\_name](#input\_image\_name) | AppStream image name | `string` | `"AppStream-WinServer2022-11-10-2025"` | no |
+| <a name="input_image_name"></a> [image\_name](#input\_image\_name) | AppStream image name | `string` | `null` | no |
+| <a name="input_image_arn"></a> [image\_arn](#input\_image\_arn) | AppStream image arn | `string` | `null` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | AppStream instance type | `string` | `"stream.standard.medium"` | no |
 | <a name="input_max_capacity"></a> [max\_capacity](#input\_max\_capacity) | Maximum fleet capacity | `number` | `3` | no |
 | <a name="input_max_user_duration_in_seconds"></a> [max\_user\_duration\_in\_seconds](#input\_max\_user\_duration\_in\_seconds) | Maximum user session duration | `number` | `600` | no |
