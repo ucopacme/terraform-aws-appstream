@@ -118,7 +118,8 @@ resource "aws_appstream_fleet" "this" {
   name                               = join("-", [var.name, "fleet"])
   instance_type                      = var.instance_type
   fleet_type                         = var.fleet_type
-  image_name                         = var.image_name
+  image_name                         = var.image_name != null ? var.image_name : null
+  image_arn                          = var.image_arn != null ? var.image_arn : null
   max_user_duration_in_seconds       = var.max_user_duration_in_seconds
   disconnect_timeout_in_seconds      = var.disconnect_timeout_in_seconds
   idle_disconnect_timeout_in_seconds = var.idle_disconnect_timeout_in_seconds
@@ -144,7 +145,7 @@ resource "aws_appstream_fleet" "this" {
   }
 
   lifecycle {
-    ignore_changes = [compute_capacity, image_name]
+    ignore_changes = [compute_capacity, image_name, image_arn]
   }
 
   tags = var.tags

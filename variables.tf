@@ -61,7 +61,23 @@ variable "fleet_type" {
 variable "image_name" {
   description = "AppStream image name"
   type        = string
-  default     = "AppStream-WinServer2022-11-10-2025"
+  default     = null
+  
+  validation {
+    condition = var.image_name != null || var.image_arn != null
+    error_message = "Provide either image_name or image_arn, but not both."
+  }
+}
+
+variable "image_arn" {
+  description = "AppStream image arn"
+  type        = string
+  default     = null
+  
+  validation {
+    condition = var.image_name != null || var.image_arn != null
+    error_message = "Provide either image_name or image_arn, but not both."
+  }
 }
 
 variable "stream_view" {
