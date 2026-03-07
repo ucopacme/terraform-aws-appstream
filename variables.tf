@@ -62,22 +62,12 @@ variable "image_name" {
   description = "AppStream image name"
   type        = string
   default     = null
-  
-  validation {
-    condition = var.image_name != null || var.image_arn != null
-    error_message = "Provide either image_name or image_arn, but not both."
-  }
 }
 
 variable "image_arn" {
   description = "AppStream image arn"
   type        = string
   default     = null
-  
-  validation {
-    condition = var.image_name != null || var.image_arn != null
-    error_message = "Provide either image_name or image_arn, but not both."
-  }
 }
 
 variable "stream_view" {

@@ -146,6 +146,10 @@ resource "aws_appstream_fleet" "this" {
 
   lifecycle {
     ignore_changes = [compute_capacity, image_name, image_arn]
+    precondition {
+      condition     = (var.image_name != null || var.image_arn != null) && !(var.image_name != null && var.image_arn != null)
+      error_message = "You must provide one of image_name or image_arn, but not both."
+    }
   }
 
   tags = var.tags
