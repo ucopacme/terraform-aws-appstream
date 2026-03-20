@@ -195,6 +195,57 @@ variable "evaluation_periods_down" {
 }
 
 ################################
+# Scheduled Scaling Configuration
+################################
+variable "enable_weekday_scaling" {
+  description = "Enable or disable weekday scheduled scaling policy"
+  type        = bool
+  default     = false
+}
+
+variable "enable_weekend_scaling" {
+  description = "Enable or disable weekend scheduled scaling policy"
+  type        = bool
+  default     = false
+}
+
+variable "weekday_min" {
+ description = "Minimum capacity for weekday scheduled scaling policy" 
+ type        = number
+ default     = null
+}
+
+variable "weekday_max" {
+ description = "Maximum capacity for weekday scheduled scaling policy" 
+ type        = number
+ default     = null
+}
+
+variable "weekend_min" {
+ description = "Minimum capacity for weekend scheduled scaling policy" 
+ type        = number
+ default     = null
+}
+
+variable "weekend_max" {
+ description = "Maximum capacity for weekend scheduled scaling policy" 
+ type        = number
+ default     = null
+}
+
+ variable "weekday_schedule" {
+  description = "Timespan for weekday schedule" 
+  type = string
+  default = "08:00-18:00"
+ }
+
+ variable "weekend_schedule" {
+  description = "Timespan for weekend schedule" 
+  type = string
+  default = "10:00-15:00"
+ }
+
+################################
 # Network Configuration
 ################################
 

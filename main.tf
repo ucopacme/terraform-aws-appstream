@@ -216,6 +216,97 @@ resource "aws_appautoscaling_policy" "scale_down" {
   }
 }
 
+# Scheduled Scaling
+resource "aws_appautoscaling_scheduled_action" "weekday_scale_up" {
+  count = var.enable_weekday_scaling ? 1 : 0
+  depends_on = [aws_appautoscaling_target.this]
+  
+  name = "weekday-scale-up-policy"
+  service_namespace = "appstream"
+  resource_id        = "fleet/${aws_appstream_fleet.this.name}"
+  scalable_dimension = "appstream:fleet:DesiredCapacity"
+  scalable_target_action {
+    min_capacity = var.weekday_min
+    max_capacity = coalesce(var.weekday_max, var.max_capacity)
+  }
+  schedule = "cron(${(split(":", (split("-", var.weekday_schedule))[0]))[1]} ${(split(":", (split("-", var.weekday_schedule))[0]))[0]} ? * MON-FRI *)"
+  timezone = "America/Los_Angeles"
+
+  lifecycle {
+    precondition {
+      condition     = var.weekday_min > var.min_capacity
+      error_message = "The weekday minimum must be > base fleet minimum. Otherwise disable weekday scaling."
+    }
+    precondition {
+      condition     = var.weekday_min <= coalesce(var.weekday_max, var.max_capacity)
+      error_message = "The weekday minimum must be <= to weekday max or fleet max if weekday max is null."
+    }
+  }
+}
+
+resource "aws_appautoscaling_scheduled_action" "weekday_scale_down" {
+  count = var.enable_weekday_scaling ? 1 : 0
+  depends_on = [aws_appautoscaling_target.this]
+  
+  name = "weekday-scale-down-policy"
+  service_namespace = "appstream"
+  resource_id        = "fleet/${aws_appstream_fleet.this.name}"
+  scalable_dimension = "appstream:fleet:DesiredCapacity"
+  scalable_target_action {
+    #Scale back to min/max from fleet settings outside of schedule
+    min_capacity = var.min_capacity
+    max_capacity = var.max_capacity
+  }
+  schedule = "cron(${(split(":", split("-", var.weekday_schedule)[1]))[1]} ${(split(":", split("-", var.weekday_schedule)[1]))[0]} ? * MON-FRI *)"
+  timezone = "America/Los_Angeles"
+}
+
+resource "aws_appautoscaling_scheduled_action" "weekend_scale_up" {
+  count = var.enable_weekend_scaling ? 1 : 0
+  depends_on = [aws_appautoscaling_target.this]
+  
+  name = "weekend-scale-up-policy"
+  service_namespace = "appstream"
+  resource_id        = "fleet/${aws_appstream_fleet.this.name}"
+  scalable_dimension = "appstream:fleet:DesiredCapacity"
+  scalable_target_action {
+    min_capacity = var.weekend_min
+    max_capacity = coalesce(var.weekend_max, var.max_capacity)
+  }
+  #schedule = "cron(0 10 ? * SAT-SUN *)"
+  schedule = "cron(${(split(":", (split("-", var.weekend_schedule))[0]))[1]} ${(split(":", (split("-", var.weekend_schedule))[0]))[0]} ? * SAT-SUN *)"
+  timezone = "America/Los_Angeles"
+
+  lifecycle {
+    precondition {
+      condition     = var.weekend_min > var.min_capacity
+      error_message = "The weekend minimum must be > base fleet minimum. Otherwise disable weekend scaling."
+    }
+    precondition {
+      condition     = var.weekend_min <= coalesce(var.weekend_max, var.max_capacity)
+      error_message = "The weekend minimum must be <= to weekend max or fleet max if weekend max is null."
+    }
+  }
+}
+
+resource "aws_appautoscaling_scheduled_action" "weekend_scale_down" {
+  count = var.enable_weekend_scaling ? 1 : 0
+  depends_on = [aws_appautoscaling_target.this]
+  
+  name = "weekend-scale-down-policy"
+  service_namespace = "appstream"
+  resource_id        = "fleet/${aws_appstream_fleet.this.name}"
+  scalable_dimension = "appstream:fleet:DesiredCapacity"
+  scalable_target_action {
+    #Scale back to min/max from fleet settings outside of schedule
+    min_capacity = var.min_capacity
+    max_capacity = var.max_capacity
+  }
+  #schedule = "cron(0 16 ? * SAT-SUN *)"
+  schedule = "cron(${(split(":", (split("-", var.weekend_schedule))[1]))[1]} ${(split(":", (split("-", var.weekend_schedule))[1]))[0]} ? * SAT-SUN *)"
+  timezone = "America/Los_Angeles"
+}
+
 # CloudWatch Alarms
 resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
   count               = var.enable_scaling ? 1 : 0

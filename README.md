@@ -18,6 +18,10 @@ No modules.
 |------|------|
 | [aws_appautoscaling_policy.scale_down](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/appautoscaling_policy) | resource |
 | [aws_appautoscaling_policy.scale_up](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/appautoscaling_policy) | resource |
+| [aws_appautoscaling_scheduled_action.weekday_scale_down](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/appautoscaling_scheduled_action) | resource |
+| [aws_appautoscaling_scheduled_action.weekday_scale_up](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/appautoscaling_scheduled_action) | resource |
+| [aws_appautoscaling_scheduled_action.weekend_scale_down](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/appautoscaling_scheduled_action) | resource |
+| [aws_appautoscaling_scheduled_action.weekend_scale_up](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/appautoscaling_scheduled_action) | resource |
 | [aws_appautoscaling_target.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/appautoscaling_target) | resource |
 | [aws_appstream_directory_config.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/appstream_directory_config) | resource |
 | [aws_appstream_fleet.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/appstream_fleet) | resource |
@@ -41,6 +45,8 @@ No modules.
 | <a name="input_disconnect_timeout_in_seconds"></a> [disconnect\_timeout\_in\_seconds](#input\_disconnect\_timeout\_in\_seconds) | Disconnect timeout | `number` | `300` | no |
 | <a name="input_enable_default_internet_access"></a> [enable\_default\_internet\_access](#input\_enable\_default\_internet\_access) | Enable default internet access for fleet instances | `bool` | `false` | no |
 | <a name="input_enable_scaling"></a> [enable\_scaling](#input\_enable\_scaling) | Enable or disable auto-scaling policies | `bool` | `true` | no |
+| <a name="input_enable_weekday_scaling"></a> [enable\_weekday\_scaling](#input\_enable\_weekday\_scaling) | Enable or disable weekday scheduled scaling policy | `bool` | `false` | no |
+| <a name="input_enable_weekend_scaling"></a> [enable\_weekend\_scaling](#input\_enable\_weekend\_scaling) | Enable or disable weekend scheduled scaling policy | `bool` | `false` | no |
 | <a name="input_enable_vpce"></a> [enable\_vpce](#input\_enable\_vpce) | Enable VPC endpoint for AppStream streaming | `bool` | `false` | no |
 | <a name="input_evaluation_periods"></a> [evaluation\_periods](#input\_evaluation\_periods) | Number of CloudWatch periods to evaluate | `number` | `5` | no |
 | <a name="input_fleet_type"></a> [fleet\_type](#input\_fleet\_type) | Fleet type: ON\_DEMAND or ALWAYS\_ON | `string` | `"ON_DEMAND"` | no |
@@ -65,6 +71,12 @@ No modules.
 | <a name="input_threshold_up"></a> [threshold\_up](#input\_threshold\_up) | Scale-up threshold (CapacityUtilization %) | `number` | `50` | no |
 | <a name="input_user_settings"></a> [user\_settings](#input\_user\_settings) | User settings for the AppStream stack | <pre>list(object({<br/>    action     = string<br/>    permission = string<br/>  }))</pre> | <pre>[<br/>  {<br/>    "action": "CLIPBOARD_COPY_FROM_LOCAL_DEVICE",<br/>    "permission": "ENABLED"<br/>  },<br/>  {<br/>    "action": "CLIPBOARD_COPY_TO_LOCAL_DEVICE",<br/>    "permission": "ENABLED"<br/>  },<br/>  {<br/>    "action": "FILE_UPLOAD",<br/>    "permission": "ENABLED"<br/>  },<br/>  {<br/>    "action": "FILE_DOWNLOAD",<br/>    "permission": "ENABLED"<br/>  },<br/>  {<br/>    "action": "PRINTING_TO_LOCAL_DEVICE",<br/>    "permission": "ENABLED"<br/>  },<br/>  {<br/>    "action": "DOMAIN_PASSWORD_SIGNIN",<br/>    "permission": "DISABLED"<br/>  },<br/>  {<br/>    "action": "DOMAIN_SMART_CARD_SIGNIN",<br/>    "permission": "DISABLED"<br/>  }<br/>]</pre> | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID (required if enable\_vpce = true) | `string` | `null` | no |
+| <a name="input_weekday_max"></a> [weekday\_max](#input\_weekday\_max) | Maximum capacity for weekday scheduled scaling policy | `number` | `null` | no |
+| <a name="input_weekday_min"></a> [weekday\_min](#input\_weekday\_min) | Minimum capacity for weekday scheduled scaling policy | `number` | `null` | no |
+| <a name="input_weekday_schedule"></a> [weekday\_schedule](#input\_weekday\_schedule) | Timespan for weekday schedule | `string` | `08:00-18:00` | no |
+| <a name="input_weekend_max"></a> [weekend\_max](#input\_weekend\_max) | Maximum capacity for weekend scheduled scaling policy | `number` | `null` | no |
+| <a name="input_weekend_min"></a> [weekend\_min](#input\_weekend\_min) | Minimum capacity for weekend scheduled scaling policy | `number` | `null` | no |
+| <a name="input_weekend_schedule"></a> [weekend\_schedule](#input\_weekend\_schedule) | Timespan for weekend schedule | `string` | `10:00-15:00` | no |
 
 ## Outputs
 
