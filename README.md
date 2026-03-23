@@ -73,10 +73,10 @@ No modules.
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID (required if enable\_vpce = true) | `string` | `null` | no |
 | <a name="input_weekday_max"></a> [weekday\_max](#input\_weekday\_max) | Maximum capacity for weekday scheduled scaling policy | `number` | `null` | no |
 | <a name="input_weekday_min"></a> [weekday\_min](#input\_weekday\_min) | Minimum capacity for weekday scheduled scaling policy | `number` | `null` | no |
-| <a name="input_weekday_schedule"></a> [weekday\_schedule](#input\_weekday\_schedule) | Timespan for weekday schedule | `string` | `08:00-18:00` | no |
+| <a name="input_weekday_schedule"></a> [weekday\_schedule](#input\_weekday\_schedule) | Timespan for weekday schedule. Specified as HH24:MI-HH24:MI in Pacific timezone. | `string` | `08:00-18:00` | no |
 | <a name="input_weekend_max"></a> [weekend\_max](#input\_weekend\_max) | Maximum capacity for weekend scheduled scaling policy | `number` | `null` | no |
 | <a name="input_weekend_min"></a> [weekend\_min](#input\_weekend\_min) | Minimum capacity for weekend scheduled scaling policy | `number` | `null` | no |
-| <a name="input_weekend_schedule"></a> [weekend\_schedule](#input\_weekend\_schedule) | Timespan for weekend schedule | `string` | `10:00-15:00` | no |
+| <a name="input_weekend_schedule"></a> [weekend\_schedule](#input\_weekend\_schedule) | Timespan for weekend schedule. Specified as HH24:MI-HH24:MI in Pacific timezone. | `string` | `10:00-15:00` | no |
 
 ## Outputs
 
