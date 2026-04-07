@@ -210,40 +210,51 @@ variable "enable_weekend_scaling" {
 }
 
 variable "weekday_min" {
- description = "Minimum capacity for weekday scheduled scaling policy" 
- type        = number
- default     = null
+  description = "Minimum capacity for weekday scheduled scaling policy"
+  type        = number
+  default     = null
 }
 
 variable "weekday_max" {
- description = "Maximum capacity for weekday scheduled scaling policy" 
- type        = number
- default     = null
+  description = "Maximum capacity for weekday scheduled scaling policy"
+  type        = number
+  default     = null
 }
 
 variable "weekend_min" {
- description = "Minimum capacity for weekend scheduled scaling policy" 
- type        = number
- default     = null
+  description = "Minimum capacity for weekend scheduled scaling policy"
+  type        = number
+  default     = null
 }
 
 variable "weekend_max" {
- description = "Maximum capacity for weekend scheduled scaling policy" 
- type        = number
- default     = null
+  description = "Maximum capacity for weekend scheduled scaling policy"
+  type        = number
+  default     = null
 }
 
- variable "weekday_schedule" {
-  description = "Timespan for weekday schedule" 
+variable "weekday_schedule" {
+  description = "Timespan for weekday schedule"
   type = string
   default = "08:00-18:00"
- }
+}
 
- variable "weekend_schedule" {
-  description = "Timespan for weekend schedule" 
+variable "weekend_schedule" {
+  description = "Timespan for weekend schedule"
   type = string
   default = "10:00-15:00"
- }
+}
+
+variable "autoscaling_schedules" {
+  description = "Arbitrary autoscaling schedules (alternative to weekday_scaling and weekend_scaling variables)"
+  type = map(object({
+    min      = number
+    max      = number
+    schedule = string
+    timezone = string
+  }))
+  default = {}
+}
 
 ################################
 # Network Configuration

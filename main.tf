@@ -220,7 +220,7 @@ resource "aws_appautoscaling_policy" "scale_down" {
 resource "aws_appautoscaling_scheduled_action" "weekday_scale_up" {
   count = var.enable_weekday_scaling ? 1 : 0
   depends_on = [aws_appautoscaling_target.this]
-  
+
   name = "weekday-scale-up-policy"
   service_namespace = "appstream"
   resource_id        = "fleet/${aws_appstream_fleet.this.name}"
@@ -247,7 +247,7 @@ resource "aws_appautoscaling_scheduled_action" "weekday_scale_up" {
 resource "aws_appautoscaling_scheduled_action" "weekday_scale_down" {
   count = var.enable_weekday_scaling ? 1 : 0
   depends_on = [aws_appautoscaling_target.this]
-  
+
   name = "weekday-scale-down-policy"
   service_namespace = "appstream"
   resource_id        = "fleet/${aws_appstream_fleet.this.name}"
@@ -264,7 +264,7 @@ resource "aws_appautoscaling_scheduled_action" "weekday_scale_down" {
 resource "aws_appautoscaling_scheduled_action" "weekend_scale_up" {
   count = var.enable_weekend_scaling ? 1 : 0
   depends_on = [aws_appautoscaling_target.this]
-  
+
   name = "weekend-scale-up-policy"
   service_namespace = "appstream"
   resource_id        = "fleet/${aws_appstream_fleet.this.name}"
@@ -292,7 +292,7 @@ resource "aws_appautoscaling_scheduled_action" "weekend_scale_up" {
 resource "aws_appautoscaling_scheduled_action" "weekend_scale_down" {
   count = var.enable_weekend_scaling ? 1 : 0
   depends_on = [aws_appautoscaling_target.this]
-  
+
   name = "weekend-scale-down-policy"
   service_namespace = "appstream"
   resource_id        = "fleet/${aws_appstream_fleet.this.name}"
@@ -305,6 +305,21 @@ resource "aws_appautoscaling_scheduled_action" "weekend_scale_down" {
   #schedule = "cron(0 16 ? * SAT-SUN *)"
   schedule = "cron(${(split(":", (split("-", var.weekend_schedule))[1]))[1]} ${(split(":", (split("-", var.weekend_schedule))[1]))[0]} ? * SAT-SUN *)"
   timezone = "America/Los_Angeles"
+}
+
+resource "aws_appautoscaling_scheduled_action" "autoscaling_schedules" {
+  for_each           = var.autoscaling_schedules
+  depends_on         = [aws_appautoscaling_target.this]
+  name               = each.key
+  schedule           = each.value.schedule
+  timezone           = each.value.timezone
+  service_namespace  = "appstream"
+  resource_id        = "fleet/${aws_appstream_fleet.this.name}"
+  scalable_dimension = "appstream:fleet:DesiredCapacity"
+  scalable_target_action {
+    min_capacity = each.value.min
+    max_capacity = each.value.max
+  }
 }
 
 # CloudWatch Alarms
