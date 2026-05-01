@@ -106,7 +106,7 @@ resource "aws_appstream_stack" "this" {
 
   application_settings {
     enabled        = true
-    settings_group = join("-", [var.name, "setting-group"])
+    settings_group = var.custom_application_settings_group_name != null ? var.custom_application_settings_group_name : join("-", [var.name, "setting-group"])
   }
 
   tags = var.tags

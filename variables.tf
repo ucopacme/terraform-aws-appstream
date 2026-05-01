@@ -292,6 +292,12 @@ variable "custom_stack_name" {
   default     = null
 }
 
+variable "custom_application_settings_group_name" {
+  description = "Custom stack name"
+  type        = string
+  default     = null
+}
+
 variable "user_settings" {
   description = "User settings for the AppStream stack"
   type = list(object({
