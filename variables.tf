@@ -41,6 +41,12 @@ variable "tags" {
 # Fleet Configuration
 ################################
 
+variable "custom_fleet_name" {
+  description = "Custom fleet name"
+  type        = string
+  default     = null
+}
+
 variable "instance_type" {
   description = "AppStream instance type"
   type        = string
@@ -279,6 +285,12 @@ variable "security_group_ids" {
 ################################
 # Stack Configuration
 ################################
+
+variable "custom_stack_name" {
+  description = "Custom stack name"
+  type        = string
+  default     = null
+}
 
 variable "user_settings" {
   description = "User settings for the AppStream stack"

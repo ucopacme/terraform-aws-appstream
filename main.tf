@@ -76,9 +76,9 @@ data "aws_secretsmanager_secret_version" "this" {
 
 # Stack
 resource "aws_appstream_stack" "this" {
-  name         = join("-", [var.name, "stack"])
-  display_name = join("-", [var.name, "stack"])
-  description  = join("-", [var.name, "stack"])
+  name         = var.custom_stack_name != null ? var.custom_stack_name : join("-", [var.name, "stack"])
+  display_name = var.custom_stack_name != null ? var.custom_stack_name : join("-", [var.name, "stack"])
+  description  = var.custom_stack_name != null ? var.custom_stack_name : join("-", [var.name, "stack"])
 
   # Dynamic HOMEFOLDERS connector
   dynamic "storage_connectors" {
@@ -115,7 +115,7 @@ resource "aws_appstream_stack" "this" {
 
 ### Fleet
 resource "aws_appstream_fleet" "this" {
-  name                               = join("-", [var.name, "fleet"])
+  name                               = var.custom_fleet_name != null ? var.custom_fleet_name : join("-", [var.name, "fleet"])
   instance_type                      = var.instance_type
   fleet_type                         = var.fleet_type
   image_name                         = var.image_name != null ? var.image_name : null
