@@ -170,6 +170,10 @@ resource "aws_appautoscaling_target" "this" {
   resource_id        = "fleet/${aws_appstream_fleet.this.name}"
   scalable_dimension = "appstream:fleet:DesiredCapacity"
   service_namespace  = "appstream"
+
+  lifecycle {
+    ignore_changes = [min_capacity]
+  }
 }
 
 resource "aws_appautoscaling_policy" "scale_up" {
